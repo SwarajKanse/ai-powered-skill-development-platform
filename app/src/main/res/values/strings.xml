@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">The Guide</string>
+    <string name="default_web_client_id">932896599642-uh5v832bfqea0ttcnc790n89cadtes1n.apps.googleusercontent.com</string>
+    <string name="navigation_drawer_open">Open Navigation</string>
+    <string name="navigation_drawer_close">Close Navigation</string>
+    <string-array name="education_levels">
+        <item>High School</item>
+        <item>Diploma</item>
+        <item>Bachelor\'s Degree</item>
+        <item>Master\'s Degree</item>
+        <item>Doctorate</item>
+    </string-array>
+
+    <string-array name="further_education_options">
+        <item>Yes</item>
+        <item>No</item>
+        <item>Maybe</item>
+    </string-array>
+
+    <string-array name="work_types">
+        <item>Full-time</item>
+        <item>Part-time</item>
+        <item>Freelancing</item>
+        <item>Entrepreneurship</item>
+        <item>Remote Work</item>
+    </string-array>
+</resources>

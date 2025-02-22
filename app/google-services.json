@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "932896599642",
+    "project_id": "theguide-swarajk",
+    "storage_bucket": "theguide-swarajk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932896599642:android:d962997c3b0a30afabb263",
+        "android_client_info": {
+          "package_name": "com.example.ai_powered_skill_development_platform"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "932896599642-g9t360dnnb7ccu2m3njoudkaci83uv6m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ai_powered_skill_development_platform",
+            "certificate_hash": "4a255863334917ad8f4c6600684d4d47c372d70f"
+          }
+        },
+        {
+          "client_id": "932896599642-uh5v832bfqea0ttcnc790n89cadtes1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACdB5vx305eYDMqFgtVFcy8i4abHQfZGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "932896599642-uh5v832bfqea0ttcnc790n89cadtes1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
