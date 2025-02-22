@@ -8,17 +8,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseDetailsAdapter extends RecyclerView.Adapter<CourseDetailsAdapter.CourseViewHolder> {
 
-    private List<Course> courseList;
+    private List<Course> originalList;
+    private List<Course> filteredList;
 
     public CourseDetailsAdapter(List<Course> courseList) {
-        this.courseList = courseList;
+        this.originalList = courseList;
+        this.filteredList = new ArrayList<>(courseList);
     }
 
     @NonNull
@@ -30,7 +31,7 @@ public class CourseDetailsAdapter extends RecyclerView.Adapter<CourseDetailsAdap
 
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
-        Course course = courseList.get(position);
+        Course course = filteredList.get(position);
         holder.courseTitle.setText(course.getTitle());
         holder.courseDescription.setText(course.getDescription());
         holder.progressBar.setProgress(course.getProgress());
@@ -45,7 +46,28 @@ public class CourseDetailsAdapter extends RecyclerView.Adapter<CourseDetailsAdap
 
     @Override
     public int getItemCount() {
-        return courseList.size();
+        return filteredList.size();
+    }
+
+    /**
+     * Filters the adapter data based on the query.
+     *
+     * @param query The text to filter courses by.
+     */
+    public void filter(String query) {
+        filteredList.clear();
+        if (query.isEmpty()) {
+            filteredList.addAll(originalList);
+        } else {
+            String lowerQuery = query.toLowerCase();
+            for (Course course : originalList) {
+                if (course.getTitle().toLowerCase().contains(lowerQuery) ||
+                        course.getDescription().toLowerCase().contains(lowerQuery)) {
+                    filteredList.add(course);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     public static class CourseViewHolder extends RecyclerView.ViewHolder {

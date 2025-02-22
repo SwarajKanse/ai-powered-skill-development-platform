@@ -50,7 +50,7 @@
                     android:id="@+id/tv_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Stay hungry, stay foolish."
+                    android:text="Keep learning and growing!"
                     android:textSize="16sp"
                     android:textColor="@color/gray" />
 
@@ -62,7 +62,7 @@
                     android:background="@drawable/search_bar_bg"
                     android:padding="8dp"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="15dp">
+                    android:layout_marginTop="12dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -83,6 +83,7 @@
 
                 <!-- Recommended Courses Section -->
                 <TextView
+                    android:id="@+id/tv_recommended_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Recommended Courses"
@@ -100,6 +101,7 @@
 
                 <!-- Ongoing Courses Section -->
                 <TextView
+                    android:id="@+id/tv_ongoing_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ongoing Courses"
@@ -117,6 +119,7 @@
 
                 <!-- Trending Courses Section -->
                 <TextView
+                    android:id="@+id/tv_trending_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Trending Courses"
@@ -252,15 +255,28 @@
                     android:background="@null" />
             </LinearLayout>
 
+            <!-- Courses Undertaken Label -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Courses Undertaken"
+                android:textSize="18sp"
+                android:paddingTop="20dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="0dp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
+
             <!-- ListView for Undertaken Courses -->
             <ListView
                 android:id="@+id/listViewCourses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@android:color/white"
-                android:dividerHeight="1dp"
+                android:divider="@null"
+                android:dividerHeight="0dp"
                 android:layout_marginTop="10dp"/>
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>
+
 </androidx.drawerlayout.widget.DrawerLayout>
