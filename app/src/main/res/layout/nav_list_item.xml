@@ -3,6 +3,10 @@
     android:id="@+id/tv_course_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
+    android:paddingStart="8dp"
+    android:padding="12dp"
+    android:textStyle="bold"
     android:textColor="@android:color/white"
-    android:textSize="15sp" />
+    android:singleLine="true"
+    android:ellipsize="end"
+    android:textSize="16sp" />

@@ -146,9 +146,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@color/dark_gray"
         app:itemBackground="@android:color/transparent"
-        app:itemTextColor="@android:color/white"
-        android:background="@color/dark_gray">
+        app:itemTextColor="@android:color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -156,7 +156,108 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Profile Section -->
+            <!-- Search Bar at Top -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/search_bar_bg"
+                android:padding="8dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_search"
+                    android:layout_marginEnd="8dp"
+                    app:tint="@color/colorPrimary" />
+
+                <EditText
+                    android:id="@+id/search_courses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Search here..."
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:background="@null" />
+            </LinearLayout>
+
+            <!-- Explore Courses -->
+            <LinearLayout
+                android:id="@+id/ll_explore_courses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:id="@+id/iv_explore_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_explore"
+                    android:layout_marginEnd="12dp"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tv_explore_courses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Explore Courses"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:gravity="start" />
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Courses Undertaken Label -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Courses Undertaken"
+                android:textSize="12sp"
+                android:paddingTop="12dp"
+                android:paddingStart="8dp"
+                android:textColor="@android:color/white" />
+
+            <!-- Scrollable Courses Undertaken List -->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="true"
+                android:scrollbars="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_courses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:scrollbars="vertical"/>
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- Divider between Courses Undertaken & Profile Section -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Profile Section (Fixed at Bottom) -->
             <LinearLayout
                 android:id="@+id/profile_section"
                 android:layout_width="match_parent"
@@ -184,99 +285,9 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/gray" />
-
-            <!-- Explore Courses (Clickable with Icon) -->
-            <LinearLayout
-                android:id="@+id/ll_explore_courses"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground">
-
-                <ImageView
-                    android:id="@+id/iv_explore_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_explore"
-                    android:layout_marginEnd="12dp"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:id="@+id/tv_explore_courses"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Explore Courses"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:gravity="start" />
-            </LinearLayout>
-
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/gray" />
-
-            <!-- Search Bar -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/search_bar_bg"
-                android:padding="8dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="10dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_search"
-                    android:layout_marginEnd="8dp"
-                    app:tint="@color/colorPrimary" />
-
-                <EditText
-                    android:id="@+id/search_courses"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Search here..."
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:background="@null" />
-            </LinearLayout>
-
-            <!-- Courses Undertaken Label -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Courses Undertaken"
-                android:textSize="18sp"
-                android:paddingTop="20dp"
-                android:paddingStart="10dp"
-                android:paddingBottom="0dp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
-
-            <!-- ListView for Undertaken Courses -->
-            <ListView
-                android:id="@+id/listViewCourses"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="@null"
-                android:dividerHeight="0dp"
-                android:layout_marginTop="10dp"/>
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

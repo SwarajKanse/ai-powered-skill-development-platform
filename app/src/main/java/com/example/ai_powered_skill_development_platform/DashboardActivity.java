@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,22 +30,24 @@ import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    // Navigation drawer components
+    // Navigation Drawer components
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private ListView listViewCourses; // For courses undertaken in the drawer
-    private ArrayAdapter<String> listAdapter;
+    private RecyclerView rvUndertakenCourses; // RecyclerView for courses undertaken
+    private UndertakenCoursesAdapter undertakenCoursesAdapter;
     private List<String> coursesUndertakenList;
 
-    // Main screen RecyclerViews for courses
+    // Main Content components
+    private EditText searchDashboard;
+    private TextView tvWelcome, tvSubtitle;
+    // (Other main screen RecyclerViews such as for recommended, ongoing, and trending courses can remain as before.)
     private RecyclerView rvRecommended, rvOngoing, rvTrending;
     private CourseDetailsAdapter recommendedAdapter, ongoingAdapter, trendingAdapter;
     private List<Course> recommendedCourses, ongoingCourses, trendingCourses;
 
-    // Other UI components in main content
-    private EditText searchDashboard;
+    // Profile info (from Navigation Drawer)
     private ImageView profileImage;
-    private TextView profileName, tvWelcome, tvSubtitle;
+    private TextView profileName;
 
     // Firebase Auth
     private FirebaseAuth mAuth;
@@ -59,9 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        // ------------------------------
-        // Setup Main Content Components
-        // ------------------------------
+        // --- Main Content Setup ---
         tvWelcome = findViewById(R.id.tv_welcome);
         tvSubtitle = findViewById(R.id.tv_subtitle);
         searchDashboard = findViewById(R.id.search_dashboard);
@@ -69,41 +67,35 @@ public class DashboardActivity extends AppCompatActivity {
         rvOngoing = findViewById(R.id.rv_ongoing);
         rvTrending = findViewById(R.id.rv_trending);
 
-        // ------------------------------
-        // Setup Navigation Drawer Components
-        // ------------------------------
+        // --- Navigation Drawer Setup ---
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        // The ListView for undertaken courses is inside the NavigationView.
-        listViewCourses = findViewById(R.id.listViewCourses);
+        // Get the undertaken courses RecyclerView from within the NavigationView layout
+        rvUndertakenCourses = navigationView.findViewById(R.id.rv_courses);
 
-        // Setup Toolbar and Drawer Toggle
+        // --- Toolbar Setup ---
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // ------------------------------
-        // Initialize Firebase Auth and User Info
-        // ------------------------------
+        // --- Firebase Auth & Profile Setup ---
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-
-        // Set welcome message using user's display name if available, else default to "Ambitious Soul!"
         String displayName = "Ambitious Soul!";
         if (user != null && user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
             displayName = user.getDisplayName();
         }
         tvWelcome.setText("Welcome, " + displayName + "!");
-        // (tv_subtitle remains as defined in XML)
+        // tvSubtitle remains as defined in XML
 
-        // Set profile info in the navigation drawer (profile image and name)
-        profileImage = findViewById(R.id.profile_image);
-        profileName = findViewById(R.id.profile_name);
-        View profileSection = findViewById(R.id.profile_section); // Entire profile section in the drawer
-
+        // --- Setup Profile Info in Navigation Drawer ---
+        profileImage = navigationView.findViewById(R.id.profile_image);
+        profileName = navigationView.findViewById(R.id.profile_name);
+        View profileSection = navigationView.findViewById(R.id.profile_section);
         if (user != null) {
             String name;
             if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
@@ -125,8 +117,6 @@ public class DashboardActivity extends AppCompatActivity {
                 profileImage.setImageResource(R.drawable.ic_profile);
             }
         }
-
-        // Set click listener on profile section to open SettingsActivity
         if (profileSection != null) {
             profileSection.setOnClickListener(v -> {
                 Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
@@ -134,54 +124,35 @@ public class DashboardActivity extends AppCompatActivity {
             });
         }
 
-        // ------------------------------
-        // Setup ListView for Undertaken Courses in Drawer
-        // ------------------------------
-        coursesUndertakenList = getLastViewedCourses(); // Using the same dummy list for now
-        listAdapter = new ArrayAdapter<>(this, R.layout.nav_list_item, R.id.tv_course_title, coursesUndertakenList);
-        listViewCourses.setAdapter(listAdapter);
-        listViewCourses.setDivider(null);
-        listViewCourses.setDividerHeight(0);
-        listViewCourses.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedCourse = coursesUndertakenList.get(position);
-            Toast.makeText(DashboardActivity.this, "Selected: " + selectedCourse, Toast.LENGTH_SHORT).show();
-        });
+        // --- Setup RecyclerView for Undertaken Courses in Navigation Drawer ---
+        coursesUndertakenList = getLastViewedCourses();
+        // Use the UndertakenCoursesAdapter we created above
+        undertakenCoursesAdapter = new UndertakenCoursesAdapter(coursesUndertakenList);
+        // You can choose horizontal or vertical layout manager here; for example, horizontal:
+        rvUndertakenCourses.setLayoutManager(new LinearLayoutManager(this));
+        rvUndertakenCourses.setAdapter(undertakenCoursesAdapter);
 
-        // ------------------------------
-        // Setup Main Screen RecyclerViews
-        // ------------------------------
+        // --- Setup Main Screen RecyclerViews for other course sections ---
         setupMainScreenCourses();
 
-        // ------------------------------
-        // Setup Search Filter on Main Dashboard Search Bar
-        // ------------------------------
+        // --- Setup Search Filter on Main Dashboard Search Bar ---
         searchDashboard.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // For example, filter recommended courses (if your adapter supports filtering)
                 if (recommendedAdapter != null) {
-                    // Assuming CourseDetailsAdapter has a filter method; implement it if needed.
                     recommendedAdapter.filter(s.toString());
                 }
             }
             @Override
             public void afterTextChanged(Editable s) { }
         });
-
-        // ------------------------------
-        // Setup Explore Courses Click Listener in Navigation Drawer
-        // ------------------------------
-        LinearLayout exploreCoursesLayout = findViewById(R.id.ll_explore_courses);
-        if (exploreCoursesLayout != null) {
-            exploreCoursesLayout.setOnClickListener(v -> {
-                Toast.makeText(DashboardActivity.this, "Explore Courses Clicked", Toast.LENGTH_SHORT).show();
-            });
-        }
     }
 
     /**
-     * Returns a dummy list of courses (undertaken) for the navigation drawer.
+     * Returns a dummy list of undertaken courses (course names) for the navigation drawer.
      */
     private List<String> getLastViewedCourses() {
         List<String> courses = new ArrayList<>();
@@ -196,7 +167,6 @@ public class DashboardActivity extends AppCompatActivity {
      * Sets up the main screen RecyclerViews for Recommended, Ongoing, and Trending courses.
      */
     private void setupMainScreenCourses() {
-        // Initialize dummy data lists
         recommendedCourses = new ArrayList<>();
         ongoingCourses = new ArrayList<>();
         trendingCourses = new ArrayList<>();
