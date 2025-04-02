@@ -194,7 +194,7 @@ public class DashboardActivity extends AppCompatActivity {
         rvOngoing.setAdapter(ongoingAdapter);
 
         // Setup RecyclerView for Trending Courses (Vertical)
-        rvTrending.setLayoutManager(new LinearLayoutManager(this));
+        rvTrending.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         trendingAdapter = new CourseDetailsAdapter(trendingCourses);
         rvTrending.setAdapter(trendingAdapter);
     }

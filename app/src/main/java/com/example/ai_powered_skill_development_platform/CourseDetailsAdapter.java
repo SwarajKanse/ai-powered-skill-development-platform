@@ -33,8 +33,9 @@ public class CourseDetailsAdapter extends RecyclerView.Adapter<CourseDetailsAdap
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         Course course = filteredList.get(position);
         holder.courseTitle.setText(course.getTitle());
+        String title = course.getTitle();
+        System.out.println("Course title: " + title);
         holder.courseDescription.setText(course.getDescription());
-        holder.progressBar.setProgress(course.getProgress());
         if (course.isOnlineImage()) {
             Glide.with(holder.itemView.getContext())
                     .load(course.getThumbnailUrl())
@@ -72,14 +73,12 @@ public class CourseDetailsAdapter extends RecyclerView.Adapter<CourseDetailsAdap
 
     public static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView courseTitle, courseDescription;
-        ProgressBar progressBar;
         ImageView thumbnail;
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
             courseTitle = itemView.findViewById(R.id.tv_course_title);
             courseDescription = itemView.findViewById(R.id.tv_course_description);
-            progressBar = itemView.findViewById(R.id.course_progress);
             thumbnail = itemView.findViewById(R.id.iv_thumbnail);
         }
     }

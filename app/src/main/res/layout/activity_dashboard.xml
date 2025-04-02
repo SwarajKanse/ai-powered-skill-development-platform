@@ -133,7 +133,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:scrollbars="vertical" />
+                    android:scrollbars="horizontal" />
 
             </LinearLayout>
         </ScrollView>
@@ -226,7 +226,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Courses Undertaken"
+                android:text="Previously Viewed"
                 android:textSize="12sp"
                 android:paddingTop="12dp"
                 android:paddingStart="8dp"
