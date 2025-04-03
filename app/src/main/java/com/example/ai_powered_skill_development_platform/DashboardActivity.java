@@ -52,12 +52,17 @@ public class DashboardActivity extends AppCompatActivity {
     // Firebase Auth
     private FirebaseAuth mAuth;
 
+    private CourseRepository courseRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Force Light Mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        courseRepository = new CourseRepository();
+        loadCoursesBasedOnUserInterests();
 
         // --- Main Content Setup ---
         tvWelcome = findViewById(R.id.tv_welcome);
@@ -197,5 +202,40 @@ public class DashboardActivity extends AppCompatActivity {
         rvTrending.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         trendingAdapter = new CourseDetailsAdapter(trendingCourses);
         rvTrending.setAdapter(trendingAdapter);
+    }
+
+    private void loadCoursesBasedOnUserInterests() {
+        // You would get these from user preferences or Gemini recommendations
+        List<String> userInterests = getUserInterests();
+
+        // For demo purposes, let's use the first interest
+        if (!userInterests.isEmpty()) {
+            String primaryInterest = userInterests.get(0);
+
+            courseRepository.getRecommendedCourses(primaryInterest, new CourseRepository.CoursesCallback() {
+                @Override
+                public void onCoursesLoaded(List<Course> courses) {
+                    // Update the recommended courses
+                    recommendedCourses.clear();
+                    recommendedCourses.addAll(courses);
+                    recommendedAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    Toast.makeText(DashboardActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private List<String> getUserInterests() {
+        // In a real app, this would come from user preferences or Gemini API
+        // For now, let's return some dummy interests
+        List<String> interests = new ArrayList<>();
+        interests.add("computer-science");
+        interests.add("data-science");
+        interests.add("artificial-intelligence");
+        return interests;
     }
 }

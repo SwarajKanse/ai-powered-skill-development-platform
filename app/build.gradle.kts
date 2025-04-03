@@ -44,6 +44,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     implementation(platform(libs.firebase.bom))  // Use latest BOM
     implementation(libs.google.firebase.auth)   // Firebase Authentication
     implementation(libs.play.services.auth)  // Google Sign-In SDK
