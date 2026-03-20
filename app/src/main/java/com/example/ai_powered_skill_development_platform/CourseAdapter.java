@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
@@ -65,5 +66,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             courseThumbnail = itemView.findViewById(R.id.course_thumbnail);
             courseProgress = itemView.findViewById(R.id.course_progress);
         }
+    }
+    // Add this method to your CourseAdapter class
+    public void updateCourses(List<Course> courses) {
+        this.courseList = new ArrayList<>(courses);
+        // Optionally call notifyDataSetChanged() here instead of in the caller
     }
 }

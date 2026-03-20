@@ -1,21 +1,20 @@
 package com.example.ai_powered_skill_development_platform;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,10 +39,10 @@ public class DashboardActivity extends AppCompatActivity {
     // Main Content components
     private EditText searchDashboard;
     private TextView tvWelcome, tvSubtitle;
-    // (Other main screen RecyclerViews such as for recommended, ongoing, and trending courses can remain as before.)
-    private RecyclerView rvRecommended, rvOngoing, rvTrending;
-    private CourseDetailsAdapter recommendedAdapter, ongoingAdapter, trendingAdapter;
-    private List<Course> recommendedCourses, ongoingCourses, trendingCourses;
+    // Only keeping the recommended courses RecyclerView
+    private RecyclerView rvRecommended;
+    private CourseDetailsAdapter recommendedAdapter;
+    private List<Course> recommendedCourses;
 
     // Profile info (from Navigation Drawer)
     private ImageView profileImage;
@@ -61,16 +60,13 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        courseRepository = new CourseRepository();
-        loadCoursesBasedOnUserInterests();
+        courseRepository = new CourseRepository(this);
 
         // --- Main Content Setup ---
         tvWelcome = findViewById(R.id.tv_welcome);
         tvSubtitle = findViewById(R.id.tv_subtitle);
         searchDashboard = findViewById(R.id.search_dashboard);
         rvRecommended = findViewById(R.id.rv_recommended);
-        rvOngoing = findViewById(R.id.rv_ongoing);
-        rvTrending = findViewById(R.id.rv_trending);
 
         // --- Navigation Drawer Setup ---
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -95,12 +91,28 @@ public class DashboardActivity extends AppCompatActivity {
             displayName = user.getDisplayName();
         }
         tvWelcome.setText("Welcome, " + displayName + "!");
-        // tvSubtitle remains as defined in XML
 
         // --- Setup Profile Info in Navigation Drawer ---
+        setupProfileInfo(user);
+
+        // --- Setup RecyclerView for Undertaken Courses in Navigation Drawer ---
+        setupUndertakenCourses();
+
+        // --- Setup Main Screen RecyclerView for recommended courses ---
+        setupRecommendedCourses();
+
+        // Load personalized recommendations after initial setup
+        checkQuestionnaireStatus();
+
+        // --- Setup Search Filter on Main Dashboard Search Bar ---
+        setupSearchFilter();
+    }
+
+    private void setupProfileInfo(FirebaseUser user) {
         profileImage = navigationView.findViewById(R.id.profile_image);
         profileName = navigationView.findViewById(R.id.profile_name);
         View profileSection = navigationView.findViewById(R.id.profile_section);
+
         if (user != null) {
             String name;
             if (user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
@@ -122,31 +134,29 @@ public class DashboardActivity extends AppCompatActivity {
                 profileImage.setImageResource(R.drawable.ic_profile);
             }
         }
+
         if (profileSection != null) {
             profileSection.setOnClickListener(v -> {
                 Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
                 startActivity(intent);
             });
         }
+    }
 
-        // --- Setup RecyclerView for Undertaken Courses in Navigation Drawer ---
+    private void setupUndertakenCourses() {
         coursesUndertakenList = getLastViewedCourses();
-        // Use the UndertakenCoursesAdapter we created above
         undertakenCoursesAdapter = new UndertakenCoursesAdapter(coursesUndertakenList);
-        // You can choose horizontal or vertical layout manager here; for example, horizontal:
         rvUndertakenCourses.setLayoutManager(new LinearLayoutManager(this));
         rvUndertakenCourses.setAdapter(undertakenCoursesAdapter);
+    }
 
-        // --- Setup Main Screen RecyclerViews for other course sections ---
-        setupMainScreenCourses();
-
-        // --- Setup Search Filter on Main Dashboard Search Bar ---
+    private void setupSearchFilter() {
         searchDashboard.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // For example, filter recommended courses (if your adapter supports filtering)
+                // Filter recommended courses
                 if (recommendedAdapter != null) {
                     recommendedAdapter.filter(s.toString());
                 }
@@ -156,9 +166,21 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Returns a dummy list of undertaken courses (course names) for the navigation drawer.
-     */
+    private void checkQuestionnaireStatus() {
+        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        boolean hasFilledQuestionnaire = prefs.getBoolean("hasFilledQuestionnaire", false);
+
+        if (hasFilledQuestionnaire) {
+            // Load courses based on questionnaire responses
+            loadCoursesBasedOnUserInterests();
+        } else {
+            // User hasn't filled questionnaire yet - show prompt or redirect
+            Toast.makeText(this, "Please complete the questionnaire for personalized recommendations", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(DashboardActivity.this, QuestionnaireActivity.class);
+            startActivity(intent);
+        }
+    }
+
     private List<String> getLastViewedCourses() {
         List<String> courses = new ArrayList<>();
         courses.add("Java Development");
@@ -168,74 +190,52 @@ public class DashboardActivity extends AppCompatActivity {
         return courses;
     }
 
-    /**
-     * Sets up the main screen RecyclerViews for Recommended, Ongoing, and Trending courses.
-     */
-    private void setupMainScreenCourses() {
+    private void setupRecommendedCourses() {
         recommendedCourses = new ArrayList<>();
-        ongoingCourses = new ArrayList<>();
-        trendingCourses = new ArrayList<>();
 
         // Dummy Data for Recommended Courses
         recommendedCourses.add(new Course("AI for Beginners", "Learn the fundamentals of AI", R.drawable.ic_placeholder, 70));
         recommendedCourses.add(new Course("Java Masterclass", "Comprehensive Java training", R.drawable.ic_placeholder, 50));
 
-        // Dummy Data for Ongoing Courses
-        ongoingCourses.add(new Course("Full Stack Web Dev", "Master frontend & backend", R.drawable.ic_placeholder, 40));
-        ongoingCourses.add(new Course("Data Science Bootcamp", "Learn data science skills", R.drawable.ic_placeholder, 60));
-
-        // Dummy Data for Trending Courses
-        trendingCourses.add(new Course("Cyber Security", "Protect systems and networks", R.drawable.ic_placeholder, 30));
-        trendingCourses.add(new Course("Cloud Computing", "Understand cloud platforms", R.drawable.ic_placeholder, 55));
-
         // Setup RecyclerView for Recommended Courses (Horizontal)
         rvRecommended.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recommendedAdapter = new CourseDetailsAdapter(recommendedCourses);
         rvRecommended.setAdapter(recommendedAdapter);
-
-        // Setup RecyclerView for Ongoing Courses (Horizontal)
-        rvOngoing.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        ongoingAdapter = new CourseDetailsAdapter(ongoingCourses);
-        rvOngoing.setAdapter(ongoingAdapter);
-
-        // Setup RecyclerView for Trending Courses (Vertical)
-        rvTrending.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        trendingAdapter = new CourseDetailsAdapter(trendingCourses);
-        rvTrending.setAdapter(trendingAdapter);
     }
 
     private void loadCoursesBasedOnUserInterests() {
-        // You would get these from user preferences or Gemini recommendations
-        List<String> userInterests = getUserInterests();
+        // Use the CourseRepository to get Gemini recommended courses
+        courseRepository.getGeminiRecommendedCourses(new CourseRepository.CoursesCallback() {
+            @Override
+            public void onCoursesLoaded(List<Course> courses) {
+                runOnUiThread(() -> {
+                    if (courses != null && !courses.isEmpty()) {
+                        // Update the recommended courses
+                        recommendedCourses.clear();
+                        recommendedCourses.addAll(courses);
+                        recommendedAdapter.notifyDataSetChanged();
 
-        // For demo purposes, let's use the first interest
-        if (!userInterests.isEmpty()) {
-            String primaryInterest = userInterests.get(0);
+                        // Update UI with personalized message
+                        updatePersonalizedMessage();
+                    }
+                });
+            }
 
-            courseRepository.getRecommendedCourses(primaryInterest, new CourseRepository.CoursesCallback() {
-                @Override
-                public void onCoursesLoaded(List<Course> courses) {
-                    // Update the recommended courses
-                    recommendedCourses.clear();
-                    recommendedCourses.addAll(courses);
-                    recommendedAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onError(String errorMessage) {
+            @Override
+            public void onError(String errorMessage) {
+                runOnUiThread(() -> {
                     Toast.makeText(DashboardActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+                });
+            }
+        });
     }
 
-    private List<String> getUserInterests() {
-        // In a real app, this would come from user preferences or Gemini API
-        // For now, let's return some dummy interests
-        List<String> interests = new ArrayList<>();
-        interests.add("computer-science");
-        interests.add("data-science");
-        interests.add("artificial-intelligence");
-        return interests;
+    private void updatePersonalizedMessage() {
+        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        String careerGoal = prefs.getString("careerGoal", "");
+
+        if (!careerGoal.isEmpty()) {
+            tvSubtitle.setText("Courses tailored for your " + careerGoal + " journey");
+        }
     }
 }

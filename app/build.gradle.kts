@@ -6,6 +6,10 @@ plugins {
 android {
     namespace = "com.example.ai_powered_skill_development_platform"
     compileSdk = 35
+    
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.example.ai_powered_skill_development_platform"
@@ -15,6 +19,8 @@ android {
         versionName = "1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val geminiApiKey: String by project
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     buildTypes {
@@ -48,7 +54,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))  // Use latest BOM
     implementation(libs.google.firebase.auth)   // Firebase Authentication
     implementation(libs.play.services.auth)  // Google Sign-In SDK
-
+    implementation("org.json:json:20210307")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

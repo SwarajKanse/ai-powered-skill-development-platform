@@ -99,42 +99,6 @@
                     android:layout_marginTop="8dp"
                     android:scrollbars="horizontal" />
 
-                <!-- Ongoing Courses Section -->
-                <TextView
-                    android:id="@+id/tv_ongoing_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ongoing Courses"
-                    android:textSize="18sp"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:layout_marginTop="16dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_ongoing"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:scrollbars="horizontal" />
-
-                <!-- Trending Courses Section -->
-                <TextView
-                    android:id="@+id/tv_trending_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Trending Courses"
-                    android:textSize="18sp"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:layout_marginTop="16dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_trending"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:scrollbars="horizontal" />
-
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
